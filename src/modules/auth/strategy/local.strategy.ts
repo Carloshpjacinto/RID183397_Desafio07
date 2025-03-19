@@ -2,7 +2,6 @@ import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
-//import { AuthLoginDTO } from '../dto/authLogin.dto';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -11,12 +10,13 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(username: string, password: string): Promise<any> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const user = await this.authService.validateUser(username, password);
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const user = await this.authService.validateUser(username, password);
 
-    if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      return user;
+    } catch (err) {
+      throw new UnauthorizedException(`Invalid username or password, ${err}`);
     }
-    return user;
   }
 }
