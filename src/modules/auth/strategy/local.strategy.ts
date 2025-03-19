@@ -12,9 +12,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   async validate(username: string, password: string): Promise<any> {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const user = await this.authService.validateUser(username, password);
+      const data = await this.authService.validateUser(username, password);
 
-      return user;
+      return data;
     } catch (err) {
       throw new UnauthorizedException(`Invalid username or password, ${err}`);
     }
