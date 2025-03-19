@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { FindUserUsernameService } from 'src/modules/users/services/FindUserUsername.service';
-//import { AuthLoginDTO } from '../dto/authLogin.dto';
-import { FindUserEmailService } from 'src/modules/users/services/FindUserEmail.service';
-//import { AuthLoginDTO } from '../dto/authLogin.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private findUserUsernameService: FindUserUsernameService,
-    private readonly findUserEmailService: FindUserEmailService,
+    private readonly findUserUsernameService: FindUserUsernameService,
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
@@ -18,6 +14,7 @@ export class AuthService {
       const { password, ...result } = user;
       return result;
     }
+
     return null;
   }
 }
