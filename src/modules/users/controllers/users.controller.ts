@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserService } from '../services/CreateUser.service';
 import { CreateUserDto } from '../dto/createUser.dto';
@@ -14,6 +15,7 @@ import { FindUserIdService } from '../services/FindUserId.service';
 import { UpdateUserDto } from '../dto/updateUser.dto';
 import { UpdateUserService } from '../services/UpdateUser.service';
 import { DeleteUserService } from '../services/DeleteUser.service';
+import { UserMatchGuard } from 'src/shared/guards/userMatch.guard';
 
 @Controller('users')
 export class UsersController {
@@ -46,6 +48,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseGuards(UserMatchGuard)
   remove(@Param('id') id: number) {
     return this.deleteUserService.execute(id);
   }

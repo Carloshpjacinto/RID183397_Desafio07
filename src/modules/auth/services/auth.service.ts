@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { FindUserUsernameService } from 'src/modules/users/services/FindUserUsername.service';
+import { ValidateTokenDTO } from '../dto/validateToken.dto';
+import { jwtSecretConstants } from '../constants/jwtSecret.constants';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +15,7 @@ export class AuthService {
   async validateUser(username: string, password: string): Promise<any> {
     const user = await this.findUserUsernameService.execute(username);
 
-    if (user && user.password === password) {
+    if (user && (await bcrypt.compare(password, user.password))) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, id, ...result } = user;
 
@@ -24,5 +27,20 @@ export class AuthService {
     }
 
     return null;
+  }
+
+  async validateToken(token: string): Promise<ValidateTokenDTO> {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const decoded = await this.jwtService.verifyAsync(token, {
+        secret: jwtSecretConstants.secret,
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      return { valid: true, decoded };
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      return { valid: false, message: error.message };
+    }
   }
 }

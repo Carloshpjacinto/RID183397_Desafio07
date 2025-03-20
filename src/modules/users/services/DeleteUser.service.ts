@@ -10,6 +10,10 @@ export class DeleteUserService {
     private readonly userRepository: Repository<User>,
   ) {}
   async execute(id: number): Promise<string> {
+    const user = await this.userRepository.findOne({ where: { id: id } });
+
+    if (!user) throw new Error('User not found');
+
     await this.userRepository.delete(id);
     return JSON.stringify(`Usuario ${id} excluido`);
   }
