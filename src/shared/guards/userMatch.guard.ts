@@ -4,23 +4,46 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { AuthService } from '../../modules/auth/services/auth.service';
+import { FindUserIdService } from 'src/modules/users/services/FindUserId.service';
 
 @Injectable()
 export class UserMatchGuard implements CanActivate {
-  canActivate(context: ExecutionContext) {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly findUserIdService: FindUserIdService,
+  ) {}
+
+  async canActivate(context: ExecutionContext) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const request = context.switchToHttp().getRequest();
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    const id = request.params.id;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    const user = request.user;
+    const { authorization } = request.headers;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    if (!authorization || !authorization.startsWith('Bearer '))
+      throw new UnauthorizedException('Invalid token');
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    const token = authorization.split(' ')[1];
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const { valid, decoded } = await this.authService.validateToken(token);
+
+    if (!valid || !decoded) throw new UnauthorizedException('Invalid token');
+
+    const user = await this.findUserIdService.execute(Number(decoded.sub));
+
+    if (!user) return false;
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (user.id !== Number(id)) {
-      throw new UnauthorizedException(
-        'You are not allowed to perform this operation',
-      );
-    }
+    if (request.params.id != user.id) return false;
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = user;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    request.user = result;
 
     return true;
   }

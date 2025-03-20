@@ -28,6 +28,7 @@ import { FindUserEmailService } from './services/FindUserEmail.service';
     FindUserEmailService,
     FindUserIdService,
     DeleteUserService,
+    CreateUserService,
   ],
 })
 export class UsersModule {}

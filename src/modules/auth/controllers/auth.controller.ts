@@ -7,19 +7,28 @@ import {
   HttpStatus,
   Get,
   Delete,
+  Body,
 } from '@nestjs/common';
-import { AuthService } from '../services/auth.service';
-import { LocalAuthGuard } from '../../../shared/guards/localAuth.guard';
-import { AuthGuard } from '../../../shared/guards/Auth.guard';
+import { LocalAuthGuard } from 'src/shared/guards/localAuth.guard';
+//import { AuthGuard } from 'src/shared/guards/auth.guard';
 import { ParamId } from 'src/shared/decorators/paramId.decorator';
 import { DeleteUserService } from 'src/modules/users/services/DeleteUser.service';
+import { CreateUserService } from 'src/modules/users/services/CreateUser.service';
+import { AuthRegisterDTO } from '../dto/authRegister.dto';
+import { UserMatchGuard } from 'src/shared/guards/userMatch.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
     private readonly deleteUserService: DeleteUserService,
+    private readonly createUserService: CreateUserService,
   ) {}
+
+  @HttpCode(HttpStatus.CREATED)
+  @Post('register')
+  registerUser(@Body() body: AuthRegisterDTO) {
+    return this.createUserService.execute(body);
+  }
 
   @HttpCode(HttpStatus.OK)
   @UseGuards(LocalAuthGuard)
@@ -30,7 +39,7 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
-  @UseGuards(AuthGuard)
+  //@UseGuards(AuthGuard)
   @Get('profile')
   profileUser(@Request() req: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
@@ -38,7 +47,7 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @UseGuards(UserMatchGuard)
   @Delete('delete/:id')
   deleteUser(@ParamId() id: number) {
     return this.deleteUserService.execute(id);
