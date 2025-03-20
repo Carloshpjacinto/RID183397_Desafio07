@@ -9,6 +9,7 @@ export class User {
   name: string;
 
   @Column()
+  @Index({ unique: true })
   username: string;
 
   @Column()
