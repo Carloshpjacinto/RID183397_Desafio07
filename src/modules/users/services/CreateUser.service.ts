@@ -1,8 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/createUser.dto';
 import { Repository } from 'typeorm';
-import { User } from '../entities/user.entity';
-//import { UpdateUserDto } from '../dto/update-user.dto';
+import { hashPassword } from 'src/shared/utils/hashPassword';
+
+type User = {
+  name: string;
+  username: string;
+  email: string;
+};
 
 @Injectable()
 export class CreateUserService {
@@ -11,7 +16,15 @@ export class CreateUserService {
     private readonly userRepository: Repository<User>,
   ) {}
   async execute(createUserDto: CreateUserDto): Promise<User> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    createUserDto.password = await hashPassword(createUserDto.password);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = createUserDto;
+
     const user = this.userRepository.create(createUserDto);
-    return await this.userRepository.save(user);
+    await this.userRepository.save(user);
+
+    return result;
   }
 }
