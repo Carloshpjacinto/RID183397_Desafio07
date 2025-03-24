@@ -16,7 +16,7 @@ import { DeleteUserService } from 'src/modules/users/services/DeleteUser.service
 import { CreateUserService } from 'src/modules/users/services/CreateUser.service';
 import { AuthRegisterDTO } from '../dto/authRegister.dto';
 import { UserMatchGuard } from 'src/shared/guards/userMatch.guard';
-import { AuthGuard } from 'src/shared/guards/Auth.guard';
+import { AuthGuard } from 'src/shared/guards/auth.guard';
 import { AuthUpdateUserDTO } from '../dto/authUpdateUser.dto';
 import { UpdateUserService } from 'src/modules/users/services/UpdateUser.service';
 
