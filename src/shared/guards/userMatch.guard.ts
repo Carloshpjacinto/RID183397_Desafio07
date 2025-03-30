@@ -32,6 +32,7 @@ export class UserMatchGuard implements CanActivate {
 
     if (!valid || !decoded) throw new UnauthorizedException('Invalid token');
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const user = await this.findUserIdService.execute(Number(decoded.sub));
 
     if (!user) return false;
@@ -39,10 +40,10 @@ export class UserMatchGuard implements CanActivate {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (request.params.id != user.id) return false;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unused-vars
     const { password, ...result } = user;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     request.user = result;
 
     return true;

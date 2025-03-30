@@ -13,12 +13,15 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, password: string): Promise<any> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const user = await this.findUserUsernameService.execute(username);
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
     if (user && (await bcrypt.compare(password, user.password))) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-unsafe-assignment
       const { password, id, ...result } = user;
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       const payload = { sub: id, username: username, email: user.email };
 
       const token = { access_token: await this.jwtService.signAsync(payload) };

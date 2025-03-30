@@ -8,7 +8,7 @@ export class FindUserUsernameService {
     @Inject('USER_REPOSITORY')
     private readonly userRepository: Repository<User>,
   ) {}
-  async execute(username: string): Promise<User> {
+  async execute(username: string): Promise<any> {
     const user = await this.userRepository.findOne({
       where: { username: username },
     });

@@ -8,13 +8,16 @@ export class FindUserEmailService {
     @Inject('USER_REPOSITORY')
     private readonly userRepository: Repository<User>,
   ) {}
-  async execute(email: string): Promise<User> {
+  async execute(email: string): Promise<any> {
     const user = await this.userRepository.findOne({
       where: { email: email },
     });
 
     if (!user) throw new Error(`User not found`);
 
-    return user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = user;
+
+    return result;
   }
 }
