@@ -8,9 +8,10 @@ export class FindUserAllService {
     @Inject('USER_REPOSITORY')
     private readonly userRepository: Repository<User>,
   ) {}
-  async execute(): Promise<User[]> {
+  async execute(): Promise<any[]> {
     const user = await this.userRepository.find();
 
-    return user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return user.map(({ password, ...result }) => result);
   }
 }

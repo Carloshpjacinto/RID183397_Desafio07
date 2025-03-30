@@ -8,11 +8,14 @@ export class FindUserIdService {
     @Inject('USER_REPOSITORY')
     private readonly userRepository: Repository<User>,
   ) {}
-  async execute(id: number): Promise<User> {
+  async execute(id: number): Promise<any> {
     const user = await this.userRepository.findOne({ where: { id: id } });
 
     if (!user) throw new Error(`User ${id} not found`);
 
-    return user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = user;
+
+    return result;
   }
 }
